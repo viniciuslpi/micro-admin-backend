@@ -10,6 +10,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     // options: {
     //   urls: ['amqp://user:password@ip:port/smartranking'],
+    //   noAck: false,
     //   queue: 'admin-backend'
     // }
   });

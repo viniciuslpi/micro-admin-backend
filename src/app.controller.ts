@@ -1,7 +1,9 @@
 import { Controller, Get, Logger, Query } from '@nestjs/common';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import { Ctx, EventPattern, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import { AppService } from './app.service';
 import { Categoria } from './interfaces/categorias/categoria.interface';
+
+const ackErrors: string[] = ['E11000'];
 
 @Controller()
 export class AppController {
@@ -11,9 +13,25 @@ export class AppController {
 
   @EventPattern('criar-categoria')
   async criarCategoria(
-    @Payload() categoria: Categoria) {
+    @Payload() categoria: Categoria, @Ctx() context: RmqContext) {
+
+      // const channel = context.getChannelRef();
+      // const originalMsg = context.getMessage();
+
       this.logger.log(`categoria: ${categoria}`);
-      await this.appService.criarCategoria(categoria);
+
+      try {
+        await this.appService.criarCategoria(categoria);
+        // await channel.ack(originalMsg); // delete stopped messages in the queue
+      } catch (err) {
+        this.logger.error(`error: ${err.message}`);
+        // ackErrors.map(async ackError => {
+        //   if(err.message.includes(ackError)){
+        //     await channel.ack(originalMsg);
+        //   }
+        // })
+      }
+
   }
 
   @MessagePattern('consultar-categorias')
