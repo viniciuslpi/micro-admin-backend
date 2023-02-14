@@ -1,25 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { CategoriaSchema } from './interfaces/categorias/categoria.schema';
-import { JogadorSchema } from './interfaces/jogadores/jogador.schema';
+import { CategoriasModule } from './categorias/categorias.module';
+import { JogadoresModule } from './jogadores/jogadores.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGODB_CONN,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }),
-    MongooseModule.forFeature([
-      { name: 'Categoria', schema: CategoriaSchema },
-      { name: 'Jogador', schema: JogadorSchema }
-    ])
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false }),
+    CategoriasModule,
+    JogadoresModule
+],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
